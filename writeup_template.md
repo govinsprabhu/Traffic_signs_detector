@@ -22,11 +22,11 @@ The goals / steps of this project are the following:
 [image1]: ./examples/image_distribution_analysis.png "Visualization"
 [image2]: ./examples/gray_image.jpg "Grayscaling"
 [image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[image4]: ./test_online/image_1.jpg "Traffic Sign 1"
+[image5]: ./test_online/image_2.jpg "Traffic Sign 2"
+[image6]: ./test_online/image_3.jpg "Traffic Sign 3"
+[image7]: ./test_online/image_4.jpg "Traffic Sign 4"
+[image8]: ./test_online/image_5.jpg "Traffic Sign 5"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -71,7 +71,7 @@ As a last step, I normalized the image data because, normalized images has 0 mea
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-I have used the LeNet, but added a lot of modification.
+I have used the LeNet convolutional netwrok, but added a lot of modification.
 My final model consisted of the following layers:
 
 | Layer         		|     Description	        					| 
@@ -89,8 +89,10 @@ My final model consisted of the following layers:
 | Flattening	| output 576        									|
 | Fully connected		| output  120       									|
 | RELU					|												|
+| Dropout					|			Keep prob of 0.6									|
 | Fully connected		| output  84       									|
 | RELU					|												|
+| Dropout					|			Keep prob of 0.6									|
 | Fully connected		| output  43       									|
 | SoftMax				|												|
 
@@ -109,7 +111,8 @@ My final model results were:
 * validation set accuracy of 0.941
 * test set accuracy of 0.921
 
-If an iterative approach was chosen:
+I have initially chosen LeNet, but modified it iteratevly for this particular dataset. I have given the details below
+
 * What was the first architecture that was tried and why was it chosen?
    * I have started with LeNet architecture, because I have already done MNIST data classification on the same. So I was getting around 89% accuracy
 * What were some problems with the initial architecture?
@@ -126,14 +129,16 @@ If an iterative approach was chosen:
     * No of epoches reduced to 20 from 40 to decrease the overfitting
     * Increased the number of filters in each layer for underfitting
     * Added one more convolution layer at the end of convolution layers for the same above reason
+    * Tried different keep probs for drop out. Settled with 0.6 
     
 * What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+    * I have started with LeNetModel, but modified it significantly for detecting 43 different traffic signals. I have choosen Convololution layers because of following reasons
+      * Unlike Multi Layer Perceptron (MLP) model, CNN architecture does not have dedicated weights, weights (filter) are being shared across the image patches.This reduces the overfitting significantly. 
+      * Number of parameter to train would have been significantly high if I have used the same number of weights in MLP due to one to many connection dedicated weight structure of MLP
+      * MaxPooling in CNN helps to reduce the size, without adding any parameter for training
+      * Convolution and max pooling architecture introduces location, translation, rotation invariance to the model.
+    * Ihave used dropout with keep-prob of 0.6, which has helped me to reduce the difference between training and validation error difference. If dropout was not there, I was getting 99.5 training accuracy. I was able to reduce it to 98 % with dropout
 
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
- 
 
 ### Test a Model on New Images
 
@@ -144,7 +149,12 @@ Here are five German traffic signs that I found on the web:
 ![alt text][image4] ![alt text][image5] ![alt text][image6] 
 ![alt text][image7] ![alt text][image8]
 
-The first image might be difficult to classify because ...
+The first image might be difficult to classify because it had green background. I selected this one to check how model is performing if the backgroud is not uniform, it has very low resolution
+The second one had blue background and taken from below. It had triangular boarder. 
+The third one was having white backgroud and round figure. Sign was indicated by white in blue backgroud
+The fourth image was not a squre, but rectangle, indicating speed limit 60 km/ph, I selected this because, I wanted to know whether it will be able to classify this numbers properly. 
+Last one was a round sign with green and white background. Was one amoung the most difficult one to classify. Due to because of non-uniform background and its sign (roundabout mandatory) was getting confused with other sign.
+
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
@@ -152,14 +162,14 @@ Here are the results of the prediction:
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| Speed limit (30km/h)   		| Speed limit (30km/h)   									| 
+| Right-of-way at the next intersection     			| Right-of-way at the next intersection 										|
+| Keep right					| Keep right											|
+| Speed limit (60km/h)      		| Speed limit (60km/h)					 				|
+| Roundabout mandatory		| Roundabout mandatory      							|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set, which have given roughly 92.1%
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
@@ -167,13 +177,13 @@ The code for making predictions on my final model is located in the 11th cell of
 
 For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
 
-| Probability         	|     Prediction	        					| 
+| Probability			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+| Speed limit (30km/h)   		| Speed limit (30km/h)   									| 
+| Right-of-way at the next intersection     			| Right-of-way at the next intersection 										|
+| Keep right					| Keep right											|
+| Speed limit (60km/h)      		| Speed limit (60km/h)					 				|
+| Roundabout mandatory		| Roundabout mandatory      							|
 
 
 For the second image ... 
