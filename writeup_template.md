@@ -102,7 +102,7 @@ Below are the description of my model training hyperparameters and optimizers
 
 * I have used `softmax_cross_entropy_with_logits` function from tf, then take mean of it to get the loss
 * Used adam optmizers, with learning rate 0.0015
-* Epochs is 40 and batch_size = 64
+* Epochs is 50 and batch_size = 64
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
@@ -121,12 +121,12 @@ I have initially chosen LeNet, but modified it iteratevly for this particular da
 * How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
     * As I mentioned earlier, the LeNet was architecture was insufficient for detecting the 43 traffic signs. So I have added one more convolutional layer and also increased the number of filters in each layers.
     * Now, from training and validation error, I was come to know network was overfitting on the training data. So I have introduced the dropout with keep_prob = 0.6. in fully connected layers.
-    * Initially I have increased the number of epochs to 40, reduced that too, due to overfitting
+    * I have used 50 epoches, which is greater than the one which I used in LeNet
 
 * Which parameters were tuned? How were they adjusted and why?
     * Main parameter I tried to tune was learning rate. Started from 0.001, I have tried different learning rates like 0.01, 0.0001, 0.005, 0.002, etc, to see the effect of learning rate having on the model training. Higher learning rate most of the time was resulting underfitting, so I reduced it. Lower learning rates were too slow while training. After trying alot of combinations, I have setteled to 0.0015, which was giving me good result
     * Batch size I have reduced from 128 to 64, was giving slightly better result
-    * No of epoches reduced to 20 from 40 to decrease the overfitting
+    * No of epoches incresed to 50
     * Increased the number of filters in each layer for underfitting
     * Added one more convolution layer at the end of convolution layers for the same above reason
     * Tried different keep probs for drop out. Settled with 0.6 
@@ -166,27 +166,66 @@ Here are the results of the prediction:
 | Right-of-way at the next intersection     			| Right-of-way at the next intersection 										|
 | Keep right					| Keep right											|
 | Speed limit (60km/h)      		| Speed limit (60km/h)					 				|
-| Roundabout mandatory		| Roundabout mandatory      							|
+| Roundabout mandatory		| Priority Road      							|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set, which have given roughly 92.1%
+The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. For testset, we got accuracy of 93%. If we increase the number of images from web, accuracy will reach approximatly to that of test set. 
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
+The code for making predictions on my final model is located in the 18th cell of the Ipython notebook.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
+For the first image, the model is almost 100% sure that this is a speed limit of 30km/h (probability of 0.99), and the image does contain a stop sign. The top five soft max probabilities were
 
 | Probability			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Speed limit (30km/h)   		| Speed limit (30km/h)   									| 
-| Right-of-way at the next intersection     			| Right-of-way at the next intersection 										|
-| Keep right					| Keep right											|
-| Speed limit (60km/h)      		| Speed limit (60km/h)					 				|
-| Roundabout mandatory		| Roundabout mandatory      							|
+| Speed limit (30km/h)   		| 0.99   									| 
+| Speed limit (20km/h)     			| 0.000006 										|
+| Speed limit (50km/h)					| negligible											|
+| Speed limit (70km/h)      		| negligible					 				|
+| Turn right ahead		| negligible      							|
 
 
-For the second image ... 
+For the second image (Right-of-way at the next intersection), again model was almost 100% sure, it was the same.   
+
+| Probability			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Right-of-way at the next intersection   		| 1   									| 
+| General caution     			| 2.7e-28 										|
+| Double curve					| negligible											|
+| Speed limit (20km/h)      		| negligible					 				|
+| Speed limit (30km/h)		| negligible      							|
+
+Again for third image (Keep right), model was almost 100% sure, it was the same.   
+
+| Probability			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Right-of-way at the next intersection   		| 1   									| 
+| Speed limit (20km/h)     			| 0 										|
+| Speed limit (30km/h)					| 0											|
+| Speed limit (50km/h)      		| 0					 				|
+| Speed limit (60km/h)		| 0      							|
+
+For fourth image, model was almost sure it was Speed limit (60km/h) (0.6)
+
+| Probability			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Speed limit (60km/h)  		| 0.6   									| 
+| Speed limit (80km/h)     			| .23640 										|
+| Speed limit (50km/h)					| .0839537531											|
+| Keep right      		| .00192461314					 				|
+| Wild animals crossing		| Negligible      							|
+
+For 5th image, model was not able to predict its right value. Right answer Roundabout mandatory, which came on the third spot with negligible probability
+
+| Probability			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Priority road  		| 0.99   									| 
+| Right-of-way at the next intersection     			| 3.48782305e-05 										|
+| Roundabout mandatory					| 1.81179348e-05											|
+| Beware of ice/snow      		| .00192461314					 				|
+| Speed limit (100km/h)		| Negligible      							|
+
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
